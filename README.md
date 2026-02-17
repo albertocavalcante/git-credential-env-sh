@@ -1,8 +1,8 @@
-# git-credential-ghenv-sh
+# git-credential-env-sh
 
 Minimal shell-based Git credential helper for HTTPS Git operations.
 
-`git-credential-ghenv-sh` is the script variant of `git-credential-ghenv`.
+`git-credential-env-sh` is the script variant of `git-credential-env-go`.
 It implements the Git credential helper protocol and returns credentials from
 environment variables when host/protocol/path rules match.
 
@@ -18,14 +18,14 @@ It is intentionally simple:
 Use inline mode without installing:
 
 ```bash
-git config --global credential.helper "!$PWD/bin/git-credential-ghenv-sh"
+git config --global credential.helper "!$PWD/bin/git-credential-env-sh"
 ```
 
-Or copy/symlink `bin/git-credential-ghenv-sh` into your PATH as
-`git-credential-ghenv-sh`, then:
+Or copy/symlink `bin/git-credential-env-sh` into your PATH as
+`git-credential-env-sh`, then:
 
 ```bash
-git config --global credential.helper ghenv-sh
+git config --global credential.helper env-sh
 ```
 
 ## Configure
@@ -48,7 +48,7 @@ The helper default username is `x-access-token`, but this is not universal.
 
 ```bash
 export GIT_CREDENTIAL_TOKEN="..."
-git config --global credential.helper "!$PWD/bin/git-credential-ghenv-sh"
+git config --global credential.helper "!$PWD/bin/git-credential-env-sh"
 git config --global credential.useHttpPath true
 ```
 
@@ -268,7 +268,7 @@ Typical direct-VCS setup:
 ```bash
 go env -w GOPRIVATE=your.git.host/your-org/*
 go env -w GONOSUMDB=your.git.host/your-org/*
-git config --global credential.helper "!$PWD/bin/git-credential-ghenv-sh"
+git config --global credential.helper "!$PWD/bin/git-credential-env-sh"
 ```
 
 Notes:
@@ -362,7 +362,7 @@ Likely cached elsewhere. Clear credentials from:
 
 ```bash
 printf 'protocol=https\nhost=github.com\npath=my-org/private-repo.git\n\n' \
-  | bin/git-credential-ghenv-sh get
+  | bin/git-credential-env-sh get
 ```
 
 ## References (Official Docs)

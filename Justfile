@@ -1,4 +1,4 @@
-# git-credential-ghenv-sh
+# git-credential-env-sh
 # Run `just` to see all available commands
 
 set dotenv-load := false
@@ -13,59 +13,26 @@ default:
 setup:
     lefthook install
 
-# ─── Build ───────────────────────────────────────────────
-
-# Build the binary
-build:
-    go build ./...
-
-# ─── Test ────────────────────────────────────────────────
-
-# Run tests
-test:
-    go test ./...
-
-# Run tests with race detector
-test-race:
-    go test -race ./...
-
-# Run tests with coverage
-coverage:
-    go test -race -coverprofile=coverage.out ./...
-    go tool cover -func=coverage.out
-
-# Run tests with gotestsum
-test-sum:
-    go tool -modfile=tools.go.mod gotestsum --format pkgname-and-test-fails
-
-# Run tests with gotestsum + race + coverage (CI-style)
-test-ci:
-    go tool -modfile=tools.go.mod gotestsum --format pkgname-and-test-fails --jsonfile test-output.json -- -race -coverprofile=coverage.out ./...
-
 # ─── Lint & Format ───────────────────────────────────────
 
-# Run linter
+# Run shellcheck
 lint:
-    go tool -modfile=tools/lint/go.mod golangci-lint run
+    shellcheck bin/git-credential-env-sh
 
-# Format code
+# Format script with shfmt
 fmt:
-    gofmt -w .
+    shfmt -w -i 2 -ci -bn bin/git-credential-env-sh
     @command -v dprint > /dev/null && dprint fmt || true
 
 # Check formatting (no changes)
 fmt-check:
-    @test -z "$(gofmt -l .)" || (echo "gofmt needed on:"; gofmt -l .; exit 1)
+    shfmt -d -i 2 -ci -bn bin/git-credential-env-sh
     @command -v dprint > /dev/null && dprint check || true
-
-# Vet code
-vet:
-    go vet ./...
 
 # ─── Check ───────────────────────────────────────────────
 
 # Run all quality checks (what CI runs)
-check: fmt-check vet lint test
+check: fmt-check lint
 
 # ─── Editor ──────────────────────────────────────────────
 

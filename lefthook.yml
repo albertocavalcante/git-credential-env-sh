@@ -7,7 +7,7 @@ pre-commit:
   parallel: true
   commands:
     trailing-whitespace:
-      glob: "*.{md,yml,yaml,json,toml,go,sh}"
+      glob: "*.{md,yml,yaml,json,toml,sh}"
       run: |
         for file in {staged_files}; do
           if grep -qP '\s+$' "$file" 2>/dev/null; then
@@ -45,28 +45,15 @@ pre-commit:
         done
       fail_text: "Do not commit files larger than 1MB"
 
-    go-fmt:
-      glob: "*.go"
-      run: |
-        unformatted=$(gofmt -l {staged_files})
-        if [ -n "$unformatted" ]; then
-          echo "Run gofmt on: $unformatted"
-          exit 1
-        fi
-      fail_text: "Run 'gofmt -w .' to fix formatting"
+    shfmt:
+      glob: "*.sh"
+      run: shfmt -d -i 2 -ci -bn {staged_files}
+      fail_text: "Run 'shfmt -w -i 2 -ci -bn' to fix formatting"
 
-    go-vet:
-      glob: "*.go"
-      run: go vet ./...
-      fail_text: "Fix go vet issues before committing"
-
-    golangci-lint:
-      glob: "*.go"
-      run: |
-        if command -v golangci-lint &> /dev/null; then
-          golangci-lint run
-        fi
-      fail_text: "Fix lint issues. Install: brew install golangci-lint"
+    shellcheck:
+      glob: "*.sh"
+      run: shellcheck {staged_files}
+      fail_text: "Fix shellcheck issues before committing"
 
 commit-msg:
   commands:
@@ -94,10 +81,10 @@ commit-msg:
 pre-push:
   parallel: true
   commands:
-    go-build:
-      run: go build ./...
-      fail_text: "Fix build errors before pushing"
+    shellcheck:
+      run: shellcheck bin/git-credential-env-sh
+      fail_text: "Fix shellcheck issues before pushing"
 
-    go-test:
-      run: go test -race ./...
-      fail_text: "Tests must pass before pushing"
+    shfmt-check:
+      run: shfmt -d -i 2 -ci -bn bin/git-credential-env-sh
+      fail_text: "Fix formatting before pushing"
